@@ -22,57 +22,14 @@ class Rec(BaseModel):
 
 import random
 
-
 def linkedin_search_tool(query: str, num_candidates: int = 5):
     """
-    Perform a LinkedIn search by calling the local LinkedIn Search HTTP service
-    (FastAPI) at LINKEDIN_SEARCH_URL (default http://127.0.0.1:8000/search).
-
-    Behavior:
-    - Attempts an HTTP GET to the service with query and num_candidates.
-    - On success returns the list of profile links from the service response.
-    - On any error falls back to the static sample links to keep the agent running.
-
-    Requirements:
-    - The FastAPI service must be running (uvicorn linkedin_api.server:app --reload --host 127.0.0.1 --port 8000)
-    - requests package installed (pip install requests)
-    - Optionally set env LINKEDIN_SEARCH_URL to change the endpoint.
+    Performs a LinkedIn search for candidates and returns candidate profile links.
     """
-    import os
-    try:
-        import requests
-    except Exception as e:
-        print(f"linkedin_search_tool: requests not available: {e}; returning fallback links")
-        return [
-            "https://www.linkedin.com/in/saber-chadded-36552b192/",
-            "https://www.linkedin.com/in/guesmi-wejden-5269222aa/",
-            "https://www.linkedin.com/in/hichem-dridi/",
-            "https://www.linkedin.com/in/nour-hamdi/",
-            "https://www.linkedin.com/in/iyadh-chaouch-072077225/",
-        ]
-
-    service_url = os.getenv("LINKEDIN_SEARCH_URL", "http://127.0.0.1:8000/search")
-    try:
-        resp = requests.get(service_url, params={"query": query, "num_candidates": int(num_candidates)}, timeout=30)
-        resp.raise_for_status()
-        data = resp.json()
-        # expect {"query": "...", "num_candidates": n, "links": [...], "count": n}
-        links = None
-        if isinstance(data, dict):
-            links = data.get("links") or data.get("results") or data.get("candidates")
-        if not links or not isinstance(links, list):
-            raise ValueError(f"unexpected response shape: {data}")
-        return links
-    except Exception as e:
-        print(f"linkedin_search_tool: remote call failed ({e}); returning fallback links")
-        return [
-            "https://www.linkedin.com/in/saber-chadded-36552b192/",
-            "https://www.linkedin.com/in/guesmi-wejden-5269222aa/",
-            "https://www.linkedin.com/in/hichem-dridi/",
-            "https://www.linkedin.com/in/nour-hamdi/",
-            "https://www.linkedin.com/in/iyadh-chaouch-072077225/",
-        ]
-
+    
+    # driver.quit()  # close browser
+    links = ['https://www.linkedin.com/in/saber-chadded-36552b192/', 'https://www.linkedin.com/in/guesmi-wejden-5269222aa/', 'https://www.linkedin.com/in/hichem-dridi/', 'https://www.linkedin.com/in/nour-hamdi/', 'https://www.linkedin.com/in/iyadh-chaouch-072077225/']
+    return links
 from typing import TypedDict, Annotated, List, Union
 from langchain_core.agents import AgentAction
 from langchain_core.messages import BaseMessage
