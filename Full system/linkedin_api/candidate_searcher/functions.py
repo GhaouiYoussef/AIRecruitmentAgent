@@ -9,10 +9,10 @@ from selenium.webdriver.support.ui import WebDriverWait
 
 # Coonstant variables
 ## candidate libnnk scrapping
-DIV_section_class = "_28fe737b"
+DIV_section_class = "e4b54b6f"
 ## pagination buttons
-LI_section_class = "e2cd352a "
-pagination_btn_class = "_661fc6a5 "
+LI_section_class = "c394e924  "
+pagination_btn_class = "_15f8b8fa  "
 # ----------------------------------------------------------------------------------
 def linkedin_query_search(driver, query):
     """Perform a LinkedIn search query with optional filters."""
@@ -72,7 +72,7 @@ def pagination_button_store(driver, num_pages=10, LI_section_class=LI_section_cl
         btn = li.find_element(By.CSS_SELECTOR, f"button.{pagination_btn_class}")
         
         # We check in the li.text is a number and if its in the [2, num_pages+1] then we add it to the dict , and remove from the list [2, num_pages+1]
-        if not li.text.isdigit() or int(li.text) not in range(2, num_pages + 1): continue
+        if not li.text.isdigit() or int(li.text) not in range(1, num_pages + 1): continue
         target_btn = btn
         pages_buttons[int(li.text)] = target_btn
 
