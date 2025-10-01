@@ -99,7 +99,7 @@ Tool-calling rules:
     "parameters": {"<param_key>": <param_value>}
 }
 - Use at most one tool per turn.
-- You may call the search tool (linkedin_search) up to 3 times total.
+- You may call the search tool (linkedin_search_tool) up to 3 times total.
 - After any use of the search tool, you MUST call the final_answer tool to produce the human-facing summary and recommendations.
 - If the user asks something unrelated to recruiting/hiring or requests a direct answer, call final_answer directly.
 
@@ -110,7 +110,7 @@ Behavior & response style:
 - Do not include any explanatory or narrative text when issuing a tool call — only emit the required JSON.
 
 Available tools:
-- linkedin_search: searches LinkedIn for candidate profiles.
+- linkedin_search_tool: searches LinkedIn for candidate profiles.
     Parameters: {"query": "<role or skill>", "num_candidates": <int>}
 
 Follow these rules strictly to ensure consistent, parseable tool usage and clear recruiter-oriented recommendations."""
@@ -237,7 +237,7 @@ out = call_llm(
     intermediate_steps=[]
 )
 
-def run_oracle(state: TypedDict):
+def run_oracle(state: AgentState):
     print("run_oracle")
     chat_history = state["chat_history"]
     out = call_llm(
@@ -249,7 +249,7 @@ def run_oracle(state: TypedDict):
         "intermediate_steps": [out]
     }
 
-def router(state: TypedDict):
+def router(state: AgentState):
     print("router")
     # return the tool name to use
     if isinstance(state["intermediate_steps"], list):
@@ -259,11 +259,12 @@ def router(state: TypedDict):
 
 
 # we use this to map tool names to tool functions
+# map the function-schema name to the actual python function so names stay consistent
 tool_str_to_func = {
-    "linkedin_search_tool": linkedin_search_tool
+    search_schema["function"]["name"]: linkedin_search_tool
 }
 
-def run_tool(state: TypedDict):
+def run_tool(state: AgentState):
     # use this as helper function so we repeat less code
     tool_name = state["intermediate_steps"][-1].tool_name
     tool_args = state["intermediate_steps"][-1].tool_input
@@ -282,10 +283,11 @@ def run_tool(state: TypedDict):
     
     from langgraph.graph import StateGraph, END
 
+# build the graph and add nodes using the function-schema's name so routing matches
 graph = StateGraph(AgentState)
 
 graph.add_node("oracle", run_oracle)
-graph.add_node("linkedin_search_tool", run_tool)
+graph.add_node(search_schema["function"]["name"], run_tool)
 # graph.add_node("final_answer", run_tool)
 
 graph.set_entry_point("oracle")  # insert query here
