@@ -66,8 +66,6 @@ Tool-calling rules:
 }
 - Use at most one tool per turn.
 - You may call the search tool (linkedin_search_tool) up to 3 times total.
-- After any use of the search tool, you MUST call the final_answer tool to produce the human-facing summary and recommendations.
-- If the user asks something unrelated to recruiting/hiring or requests a direct answer, call final_answer directly.
 
 Behavior & response style:
 - Prioritize concise, evidence-based recommendations derived from tool outputs.
@@ -143,8 +141,8 @@ def call_llm(user_input: str, chat_history: list[dict], intermediate_steps: list
     return AgentAction.from_ollama(res)
 
 
-def final_answer(answer: str) -> str:
-    return answer
+# def final_answer(answer: str) -> str:
+#     return answer
 
 
 tool_str_to_func = {}
@@ -156,15 +154,15 @@ class OracleRuntime:
         search_schema = FunctionSchema(linkedin_search_tool).to_ollama()
         # SR workaround
         search_schema["function"]["parameters"]["properties"]["query"]["description"] = None
-        final_schema = FunctionSchema(final_answer).to_ollama()
+        # final_schema = FunctionSchema(final_answer).to_ollama()
 
-        self.schemas = [search_schema, final_schema]
+        self.schemas = [search_schema]#, final_schema]
         self.search_tool_name = search_schema["function"]["name"]
-        self.final_tool_name = final_schema["function"]["name"]
+        # self.final_tool_name = final_schema["function"]["name"]
 
         global tool_str_to_func
         tool_str_to_func[self.search_tool_name] = linkedin_search_tool
-        tool_str_to_func[self.final_tool_name] = final_answer
+        # tool_str_to_func[self.final_tool_name] = final_answer
 
     def _execute_action(self, action: AgentAction) -> AgentAction:
         fn = tool_str_to_func.get(action.tool_name)
@@ -187,23 +185,23 @@ class OracleRuntime:
 
         assistant_text = None
 
-        # If the first action was a search, immediately follow up with a final_answer using the scratchpad
-        if executed1.tool_name == self.search_tool_name:
-            action2 = call_llm(
-                "Please produce the final recruiter recommendation based on the latest search results.",
-                history,
-                [executed1],
-                self.schemas,
-            )
-            executed2 = self._execute_action(action2)
-            actions.append({"name": executed2.tool_name, "parameters": executed2.tool_input})
-            if executed2.tool_name == self.final_tool_name:
-                assistant_text = executed2.tool_input.get("answer") if isinstance(executed2.tool_input, dict) else str(executed2.tool_input)
-                # If the tool returned its own output, prefer it
-                if executed2.tool_output and executed2.tool_output != "None":
-                    assistant_text = executed2.tool_output
-            elif executed2.tool_output:
-                tool_outputs.append(executed2.tool_output)
+        # # If the first action was a search, immediately follow up with a final_answer using the scratchpad
+        # if executed1.tool_name == self.search_tool_name:
+        #     action2 = call_llm(
+        #         "Please produce the final recruiter recommendation based on the latest search results.",
+        #         history,
+        #         [executed1],
+        #         self.schemas,
+        #     )
+        #     executed2 = self._execute_action(action2)
+        #     actions.append({"name": executed2.tool_name, "parameters": executed2.tool_input})
+        #     if executed2.tool_name == self.final_tool_name:
+        #         assistant_text = executed2.tool_input.get("answer") if isinstance(executed2.tool_input, dict) else str(executed2.tool_input)
+        #         # If the tool returned its own output, prefer it
+        #         if executed2.tool_output and executed2.tool_output != "None":
+        #             assistant_text = executed2.tool_output
+        #     elif executed2.tool_output:
+        #         tool_outputs.append(executed2.tool_output)
 
         # Fallback assistant text if none
         if not assistant_text:
