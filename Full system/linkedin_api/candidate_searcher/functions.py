@@ -82,7 +82,7 @@ def pagination_button_store(driver, num_pages=10, LI_section_class=LI_section_cl
 
 
 
-def get_candidates_links(driver, num_candidates=100) -> list:
+def get_candidates_links(driver, num_candidates=10) -> list:
     
     # we create a cleaning function to mkae sure link is of a profile candid.startswith('https://www.linkedin.com/in/')
     def list_links_check(links_list):
@@ -135,7 +135,7 @@ def get_candidates_links(driver, num_candidates=100) -> list:
                     break
                 else:
                     print(f"Only {len(FULL_CANDIDATES_LIST)} candidates found, less than requested {num_candidates}.")
-        if len(FULL_CANDIDATES_LIST) < num_candidates:
-            print(f"Only {len(FULL_CANDIDATES_LIST)} candidates found, less than requested {num_candidates}.")
-
-    return FULL_CANDIDATES_LIST
+    if len(FULL_CANDIDATES_LIST) < num_candidates:
+        print(f"Only {len(FULL_CANDIDATES_LIST)} candidates found, less than requested {num_candidates}.")
+        return FULL_CANDIDATES_LIST
+    return FULL_CANDIDATES_LIST[:num_candidates]   
