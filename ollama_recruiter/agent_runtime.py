@@ -3,8 +3,8 @@ import json
 
 from pydantic import BaseModel
 import ollama
-from ollama_recruiter.tools import linkedin_search_tool
-from ollama_recruiter.prompts import search_system_prompt as system_prompt
+from tools import linkedin_search_tool
+from prompts import search_system_prompt as system_prompt
 
 class Rec(BaseModel):
     top_candidates_liks: list[str]
@@ -96,7 +96,8 @@ def call_llm(user_input: str, chat_history: list[dict], intermediate_steps: list
         *scratchpad,
     ]
     res = ollama.chat(
-        model="llama3-groq-tool-use:8b",
+        # model="llama3-groq-tool-use:8b",
+        model="granite4:micro",
         messages=messages,
         tools=tools,
     )

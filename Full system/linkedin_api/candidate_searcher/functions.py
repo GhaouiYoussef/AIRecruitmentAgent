@@ -7,12 +7,12 @@ from selenium.webdriver.support.ui import WebDriverWait
 
 
 
-# Coonstant variables
+# Constant variables
 ## candidate libnnk scrapping
-DIV_section_class = "e4b54b6f"
+DIV_section_class = "_07a564f8"
 ## pagination buttons
-LI_section_class = "c394e924  "
-pagination_btn_class = "_15f8b8fa  "
+LI_section_class = "_6ece25d4   "
+pagination_btn_class = "c726258b  "
 # ----------------------------------------------------------------------------------
 def linkedin_query_search(driver, query):
     """Perform a LinkedIn search query with optional filters."""

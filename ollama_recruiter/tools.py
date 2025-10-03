@@ -23,6 +23,7 @@ def linkedin_search_tool(query: str, num_candidates: int = 5):
             links = data.get("links") or data.get("results") or data.get("candidates")
         if not links or not isinstance(links, list):
             raise ValueError(f"unexpected response shape: {data}")
+        # if TOP_K != None:
         return links
     except Exception as e:
         print(f"linkedin_search_tool: remote call failed ({e}); returning fallback links")
