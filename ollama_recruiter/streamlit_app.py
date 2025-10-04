@@ -1,5 +1,7 @@
 import streamlit as st
 from agent_runtime import OracleRuntime
+from pathlib import Path
+import datetime
 
 st.set_page_config(page_title="Oracle Recruiter", page_icon="🧠", layout="wide")
 
@@ -14,6 +16,31 @@ with st.sidebar:
     Tip: Ensure your LinkedIn FastAPI search service is running on http://127.0.0.1:8000/search
     and that the model 'llama3-groq-tool-use:8b' is available in Ollama.
     """)
+
+    st.markdown("---")
+    st.subheader("Job Description Upload")
+    jd_file = st.file_uploader("Upload a job description (.txt)", type=["txt"], help="This will be written into data/jd_input for the candidate scoring pipeline.")
+    if jd_file is not None:
+        try:
+            repo_root = Path(__file__).resolve().parent
+            jd_input_dir = repo_root / "data" / "jd_input"
+            jd_input_dir.mkdir(parents=True, exist_ok=True)
+
+            # Save original filename with timestamp to keep history
+            timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+            safe_name = jd_file.name.replace(" ", "_")
+            hist_filename = f"{timestamp}_{safe_name}"
+            hist_path = jd_input_dir / hist_filename
+            content = jd_file.read().decode("utf-8", errors="replace")
+            hist_path.write_text(content, encoding="utf-8")
+
+            # Also write/overwrite canonical job_description.txt for pipeline convenience
+            canonical_path = jd_input_dir / "job_description.txt"
+            canonical_path.write_text(content, encoding="utf-8")
+
+            st.success(f"Uploaded and saved as {hist_filename} and updated job_description.txt")
+        except Exception as e:
+            st.error(f"Failed to save uploaded file: {e}")
 
 if "runtime" not in st.session_state:
     st.session_state.runtime = OracleRuntime()
