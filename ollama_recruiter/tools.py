@@ -218,10 +218,11 @@ def linkedin_search_tool(query: str, num_candidates: int = 5, test_mode_extract:
                 print(f"Error reading job description file: {e}")
         else:
             print("Job description file not found.")
+            return links
 
     except Exception as e:
         print(f"linkedin_search_tool: remote call failed ({e}); returning fallback links")
-        return saved_files
+        return links
 
 # create a temp test runner
 if __name__ == "__main__":
