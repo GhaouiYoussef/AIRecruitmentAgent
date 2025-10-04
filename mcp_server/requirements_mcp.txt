@@ -1,0 +1,10 @@
+# Core MCP + adapters (install mcp from source since PyPI distribution not found)
+git+https://github.com/modelcontextprotocol/python.git@main#egg=mcp
+langchain-mcp-adapters>=0.0.8
+
+# (Optional) Align with LangGraph MCP docs
+langgraph-api>=0.2.3
+langgraph-sdk>=0.1.61
+
+# Typing helpers
+typing-extensions>=4.12.2
