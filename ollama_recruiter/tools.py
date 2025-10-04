@@ -26,6 +26,8 @@ def linkedin_search_tool(query: str, num_candidates: int = 5):
         # We will no longer return the link of candidates as it is, but we will scrape each candidate using the extractor tool, then the scraped candidates will be sent to the scorer model to return a dictionary ranking the candidates
         # return links
 
+        
+
     except Exception as e:
         print(f"linkedin_search_tool: remote call failed ({e}); returning fallback links")
         return []

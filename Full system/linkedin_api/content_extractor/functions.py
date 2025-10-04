@@ -13,8 +13,13 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
+import os
 
-LI_EXPERIENCE_CLASS = 'artdeco-list__item wGxeXISsaJCeiVVnmaTneYElILlxgrMuULyU lndVLTIqemEYVwyXFSGJfYDwjuqsCaiWyaKlfk'
+# Set the environment variable to disable oneDNN optimizations
+
+os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
+LI_EXPERIENCE_CLASS = 'artdeco-list__item JbUlKrwJZIKsPIRsFwTloRqUskJQvmJlyE IwDdCXUNWfBpIItubHorVUPbXlFWhRBg'
+
 def text_of(sel: bs4.element.Tag | None) -> str | None:
     return sel.get_text(strip=True) if sel else None
 
@@ -175,6 +180,7 @@ def candidate_info_extractor(candidate_link, driver):
     # Visit main profile page
     driver.get(candidate_link)
     wait_for_element(driver, By.TAG_NAME, "body")  # Wait for general body load
+    # time.sleep(5)  # additional wait to ensure dynamic content loads
 
     soup = bs4.BeautifulSoup(driver.page_source, 'lxml')
     sections = soup.find_all('section', {'class': 'artdeco-card pv-profile-card break-words mt2'})

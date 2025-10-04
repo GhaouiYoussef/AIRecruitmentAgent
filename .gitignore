@@ -290,3 +290,4 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 Full system/linkedin_api/__pycache__/server.cpython-312.pyc
+Full system/linkedin_api/content_extractor/__pycache__/functions.cpython-312.pyc
