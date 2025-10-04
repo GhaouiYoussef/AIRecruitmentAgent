@@ -1,0 +1,248 @@
+{
+	"info": {
+		"_postman_id": "ec86ec94-f181-40a8-a04a-4fdf1f9101a7",
+		"name": "HR-AI-Agent",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "28663129"
+	},
+	"item": [
+		{
+			"name": "LinkedinScrapper",
+			"item": [
+				{
+					"name": "search",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/search?query=data%20scientist&num_candidates=5",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"search"
+							],
+							"query": [
+								{
+									"key": "query",
+									"value": "data%20scientist"
+								},
+								{
+									"key": "num_candidates",
+									"value": "5"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "extract",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/extract?url=https%3A%2F%2Fwww.linkedin.com%2Fin%2Fyoussef-ghaoui%2F",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"extract"
+							],
+							"query": [
+								{
+									"key": "url",
+									"value": "https%3A%2F%2Fwww.linkedin.com%2Fin%2Fyoussef-ghaoui%2F"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "extract",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseURL}}/extract?url=https%3A%2F%2Fwww.linkedin.com%2Fin%2",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"extract"
+									],
+									"query": [
+										{
+											"key": "url",
+											"value": "https%3A%2F%2Fwww.linkedin.com%2Fin%2"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "date",
+									"value": "Sat, 04 Oct 2025 00:53:53 GMT"
+								},
+								{
+									"key": "server",
+									"value": "uvicorn"
+								},
+								{
+									"key": "content-length",
+									"value": "8981"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"description": "",
+									"type": "text"
+								}
+							],
+							"cookie": [
+								{
+									"expires": "Invalid Date",
+									"domain": "",
+									"path": ""
+								}
+							],
+							"body": "{\n    \"url\": \"https://www.linkedin.com/in/youssef-ghaoui/\",\n    \"result\": {\n        \"experience\": [\n            {\n                \"role\": \"Artificial Intelligence Engineer\",\n                \"company\": \"Upwork\",\n                \"employment_type\": \"Freelance\",\n                \"duration\": \"2 mos\",\n                \"location\": \"Remote\",\n                \"description\": null\n            },\n            {\n                \"role\": \"AI Engineer (R&D)\",\n                \"company\": \"Pearls Consulting Tunisia\",\n                \"employment_type\": \"Internship\",\n                \"duration\": \"4 mos\",\n                \"location\": \"Tunis, Tunisia · Hybrid\",\n                \"description\": \"Developed and deployed a real-time AI pipeline for automated PPE safety inspections. The system combined computer vision (YOLO + SAM), vision-language reasoning, and multi-agent coordination to detect violations and generate structured safety reports.Key Achievements:🚀 Boosted violation detection accuracy by 10.2% through VLM + SAM integration.📄 Automated markdown/PDF safety report generation with reasoning agents.🐳 Scaled deployment on DigitalOcean using Docker + FastAPI.🔎 Logged agent behavior via MCP framework, enabling traceability and modular growth.Developed and deployed a real-time AI pipeline for automated PPE safety inspections. The system combined computer vision (YOLO + SAM), vision-language reasoning, and multi-agent coordination to detect violations and generate structured safety reports.\\n\\nKey Achievements:\\n\\n🚀 Boosted violation detection accuracy by 10.2% through VLM + SAM integration.\\n\\n📄 Automated markdown/PDF safety report generation with reasoning agents.\\n\\n🐳 Scaled deployment on DigitalOcean using Docker + FastAPI.\\n\\n🔎 Logged agent behavior via MCP framework, enabling traceability and modular growth.\"\n            },\n            {\n                \"role\": \"Generative AI Engineer\",\n                \"company\": \"Pearls Consulting Tunisia\",\n                \"employment_type\": \"Internship\",\n                \"duration\": \"3 mos\",\n                \"location\": \"Tunis, Tunisia · On-site\",\n                \"description\": \"𝐀𝐮𝐭𝐨𝐧𝐨𝐦𝐲 & 𝐂𝐨𝐬𝐭 𝐑𝐞𝐝𝐮𝐜𝐭𝐢𝐨𝐧: Independently developed a chatbot that automated key processes, significantly reducing project costs by implementing efficient design and automation strategies.𝐌𝐨𝐝𝐞𝐥 𝐄𝐯𝐚𝐥𝐮𝐚𝐭𝐢𝐨𝐧 & 𝐁𝐞𝐧𝐜𝐡𝐦𝐚𝐫𝐤𝐢𝐧𝐠: Evaluated multiple Large Language Models (LLMs) and benchmarked them across various performance metrics (e.g., accuracy, response time, and scalability).𝘛𝘩𝘪𝘴 𝘵𝘩𝘰𝘳𝘰𝘶𝘨𝘩 𝘦𝘷𝘢𝘭𝘶𝘢𝘵𝘪𝘰𝘯 𝘩𝘦𝘭𝘱𝘦𝘥 𝘪𝘯 𝘴𝘦𝘭𝘦𝘤𝘵𝘪𝘯𝘨 𝘵𝘩𝘦 𝘮𝘰𝘴𝘵 𝘰𝘱𝘵𝘪𝘮𝘢𝘭 𝘮𝘰𝘥𝘦𝘭 𝘧𝘰𝘳 𝘵𝘩𝘦 𝘤𝘩𝘢𝘵𝘣𝘰𝘵.𝐌𝐨𝐝𝐞𝐥 𝐓𝐮𝐧𝐢𝐧𝐠: Fine-tuned an open-source Large Language Model (LLM) using Q-LORA, enhancing model accuracy and reducing response time for faster interactions.𝐀𝐠𝐞𝐧𝐭 𝐃𝐞𝐯𝐞𝐥𝐨𝐩𝐦𝐞𝐧𝐭: Designed and deployed a mitigation LLM-Agent, greatly improving the chatbot's accuracy on complex queries and elevating its overall reliability.𝐃𝐚𝐭𝐚 𝐒𝐲𝐧𝐭𝐡𝐞𝐬𝐢𝐬: Utilized ChatGPT-4 to generate synthetic datasets, enabling the chatbot to effectively handle diverse and complex queries, improving its versatility.𝐑𝐀𝐆 𝐀𝐩𝐩𝐫𝐨𝐚𝐜𝐡: Customized a chunking technique and integrated Retrieval-Augmented Generation (RAG) with reranking to enhance the chatbot’s ability to manage sensitive question-answer scenarios.𝐃𝐞𝐩𝐥𝐨𝐲𝐦𝐞𝐧𝐭 𝐏𝐫𝐞𝐩𝐚𝐫𝐚𝐭𝐢𝐨𝐧: Successfully containerized the project with Docker and prepared it for large-scale deployment.𝐀𝐮𝐭𝐨𝐧𝐨𝐦𝐲 & 𝐂𝐨𝐬𝐭 𝐑𝐞𝐝𝐮𝐜𝐭𝐢𝐨𝐧: Independently developed a chatbot that automated key processes, significantly reducing project costs by implementing efficient design and automation strategies.\\n𝐌𝐨𝐝𝐞𝐥 𝐄𝐯𝐚𝐥𝐮𝐚𝐭𝐢𝐨𝐧 & 𝐁𝐞𝐧𝐜𝐡𝐦𝐚𝐫𝐤𝐢𝐧𝐠: Evaluated multiple Large Language Models (LLMs) and benchmarked them across various performance metrics (e.g., accuracy, response time, and scalability). \\n𝘛𝘩𝘪𝘴 𝘵𝘩𝘰𝘳𝘰𝘶𝘨𝘩 𝘦𝘷𝘢𝘭𝘶𝘢𝘵𝘪𝘰𝘯 𝘩𝘦𝘭𝘱𝘦𝘥 𝘪𝘯 𝘴𝘦𝘭𝘦𝘤𝘵𝘪𝘯𝘨 𝘵𝘩𝘦 𝘮𝘰𝘴𝘵 𝘰𝘱𝘵𝘪𝘮𝘢𝘭 𝘮𝘰𝘥𝘦𝘭 𝘧𝘰𝘳 𝘵𝘩𝘦 𝘤𝘩𝘢𝘵𝘣𝘰𝘵.\\n𝐌𝐨𝐝𝐞𝐥 𝐓𝐮𝐧𝐢𝐧𝐠: Fine-tuned an open-source Large Language Model (LLM) using Q-LORA, enhancing model accuracy and reducing response time for faster interactions.\\n𝐀𝐠𝐞𝐧𝐭 𝐃𝐞𝐯𝐞𝐥𝐨𝐩𝐦𝐞𝐧𝐭: Designed and deployed a mitigation LLM-Agent, greatly improving the chatbot's accuracy on complex queries and elevating its overall reliability.\\n𝐃𝐚𝐭𝐚 𝐒𝐲𝐧𝐭𝐡𝐞𝐬𝐢𝐬: Utilized ChatGPT-4 to generate synthetic datasets, enabling the chatbot to effectively handle diverse and complex queries, improving its versatility.\\n𝐑𝐀𝐆 𝐀𝐩𝐩𝐫𝐨𝐚𝐜𝐡: Customized a chunking technique and integrated Retrieval-Augmented Generation (RAG) with reranking to enhance the chatbot’s ability to manage sensitive question-answer scenarios.\\n𝐃𝐞𝐩𝐥𝐨𝐲𝐦𝐞𝐧𝐭 𝐏𝐫𝐞𝐩𝐚𝐫𝐚𝐭𝐢𝐨𝐧: Successfully containerized the project with Docker and prepared it for large-scale deployment.\"\n            },\n            {\n                \"role\": \"Welyne\",\n                \"company\": null,\n                \"employment_type\": null,\n                \"duration\": null,\n                \"location\": \"Jul 2023 - Aug 2023 · 2 mos Jul 2023 to Aug 2023 · 2 mos\",\n                \"description\": \"𝐎𝐩𝐭𝐢𝐦𝐢𝐳𝐚𝐭𝐢𝐨𝐧: Developed a Python-Flask API that streamlined logistics operations, cutting costs by 15% through improved process automation and efficiency.𝐏𝐫𝐨𝐛𝐥𝐞𝐦-𝐒𝐨𝐥𝐯𝐢𝐧𝐠: Applied customized Traveling Salesman Problem (TSP) techniques to optimize delivery routes, taking into account vehicle capacity, delivery locations, and route constraints, resulting in more efficient delivery schedules and reduced operational costs.𝐂𝐥𝐢𝐞𝐧𝐭 𝐄𝐧𝐠𝐚𝐠𝐞𝐦𝐞𝐧𝐭: Conducted regular meetings and consultations with the client to ensure alignment with their goals, gather feedback, and refine solutions, ensuring the final delivery fully met their expectations.𝐎𝐩𝐭𝐢𝐦𝐢𝐳𝐚𝐭𝐢𝐨𝐧: Developed a Python-Flask API that streamlined logistics operations, cutting costs by 15% through improved process automation and efficiency.\\n𝐏𝐫𝐨𝐛𝐥𝐞𝐦-𝐒𝐨𝐥𝐯𝐢𝐧𝐠: Applied customized Traveling Salesman Problem (TSP) techniques to optimize delivery routes, taking into account vehicle capacity, delivery locations, and route constraints, resulting in more efficient delivery schedules and reduced operational costs.\\n𝐂𝐥𝐢𝐞𝐧𝐭 𝐄𝐧𝐠𝐚𝐠𝐞𝐦𝐞𝐧𝐭: Conducted regular meetings and consultations with the client to ensure alignment with their goals, gather feedback, and refine solutions, ensuring the final delivery fully met their expectations.\"\n            }\n        ],\n        \"education\": [\n            {\n                \"institution\": \"ENSI - Ecole Nationale des Sciences de l'Informatique\",\n                \"institution_url\": \"https://www.linkedin.com/company/11094564/\",\n                \"image_url\": \"https://media.licdn.com/dms/image/v2/C4E0BAQFwXUUykEGA-w/company-logo_100_100/company-logo_100_100/0/1631371771846/ensitn_logo?e=1762387200&v=beta&t=IXgg-NeUNl2OyhNbTYMUlc60wyjvOxUoFgBz22Ae6M4\",\n                \"field_of_study\": \"Master's degree, Computer Science Engineering\",\n                \"start_end\": \"Sep 2022 - 2025\",\n                \"duration\": null,\n                \"grade\": \"3.7/4.0\",\n                \"description\": null\n            },\n            {\n                \"institution\": \"IPEIT - Institut Préparatoire aux Etudes d'Ingénieurs de Tunis\",\n                \"institution_url\": \"https://www.linkedin.com/company/18301365/\",\n                \"image_url\": \"https://media.licdn.com/dms/image/v2/C510BAQEqEN9uEfH6vw/company-logo_100_100/company-logo_100_100/0/1631327299082?e=1762387200&v=beta&t=1BA4M7w9TA3tCQZqpA-DuxP59iFa75GZpMFNN4c8VKs\",\n                \"field_of_study\": \"Pre-Engineering\",\n                \"start_end\": \"Sep 2020 - Jun 2022\",\n                \"duration\": null,\n                \"grade\": \"376/1800\",\n                \"description\": null\n            }\n        ],\n        \"languages\": [\n            {\n                \"language\": \"Arabic\",\n                \"level\": 2\n            },\n            {\n                \"language\": \"English\",\n                \"level\": 2\n            },\n            {\n                \"language\": \"French\",\n                \"level\": 1\n            }\n        ],\n        \"skills\": \"PyTorch Leadership PostgreSQL C# Fine Tuning MLOps Physics Python (Programming Language) Customer Relationship Management (CRM) Communication Spoken English Pandas (Software) Generative AI mcp PiNN English Generative Adversarial Networks (GANs) Optical Character Recognition (OCR) Creative Problem Solving SQL Pruning Cloud Computing BERT (Language Model) Analytical Skills Generative Art Debugging System Deployment Decision-Making AI Agents IBM Servers Reinforcement Learning Prompt Engineering TensorFlow Attention to Detail Jupyter Adaptation Optimization Large Language Models (LLM) Java Recurrent Neural Networks (RNN) Team Leadership Feature Engineering Style Transfer Project Planning Problem Solving Chemistry docker Creativity and Innovation Retrieval-Augmented Generation (RAG)\"\n    }\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Candidates Ranker",
+			"item": [
+				{
+					"name": "health",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8001/scorer_tool/health",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8001",
+							"path": [
+								"scorer_tool",
+								"health"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "load_profiles",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"json_folder\": \"YOUR_PATH\\Full system\\tmp_candids_jsons\",\r\n  \"exp_agg\": \"sum_norm\",\r\n  \"reset\": true\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8001/scorer_tool/load_profiles",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8001",
+							"path": [
+								"scorer_tool",
+								"load_profiles"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "load_profiles",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"json_folder\": \"YOUR_PATH\\Full system\\tmp_candids_jsons\",\r\n  \"exp_agg\": \"sum_norm\",\r\n  \"reset\": true\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:8001/scorer_tool/load_profiles",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8001",
+									"path": [
+										"scorer_tool",
+										"load_profiles"
+									]
+								}
+							},
+							"_postman_previewlanguage": "",
+							"header": [],
+							"cookie": [
+								{
+									"expires": "Invalid Date",
+									"domain": "",
+									"path": ""
+								}
+							],
+							"body": ""
+						}
+					]
+				},
+				{
+					"name": "score",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"job_text\": \"We need a Python ML engineer with NLP experience, transformers, and FastAPI. English required.\",\r\n  \"weights\": {\r\n    \"experience\": 0.4,\r\n    \"skills\": 0.4,\r\n    \"education\": 0.2,\r\n    \"languages\": 0.1\r\n  },\r\n  \"top_k_search\": 200\r\n}\r\n// we are going to recieve a null languages score, because the languages information from the json wont be transported after we call the embeddings",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8001/scorer_tool/score",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8001",
+							"path": [
+								"scorer_tool",
+								"score"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "baseURL",
+			"value": "",
+			"type": "default"
+		}
+	]
+}
