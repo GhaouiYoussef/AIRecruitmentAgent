@@ -1,12 +1,17 @@
 <div align="center">
 
-# AI Recruitment Agent System
+# Local-AI-Recruiter — Ollama + LangGraph agent (CPU friendly)
+Privacy-first, local recruitment assistant that scores and summarizes candidates using Ollama (local models) and orchestrated agents with LangGraph.
 
 End‑to‑end modular system for: (1) LinkedIn talent discovery & profile extraction, (2) semantic multi‑factor candidate scoring, and (3) an interactive LLM assistant (Ollama) that orchestrates the workflow via tool calls.
 
 </div>
 
 ---
+
+
+https://github.com/user-attachments/assets/80a33011-ab23-4121-b947-59cade08964b
+
 
 ## 1. Project Overview
 
@@ -110,7 +115,6 @@ LINKEDIN_SEARCH_URL=http://127.0.0.1:8000/search
 LINKEDIN_EXTRACT_URL=http://127.0.0.1:8000/extract
 CANDIDATE_SCORER_URL=http://127.0.0.1:8001/scorer_tool
 LINKEDIN_LOGIN_WAIT_SECONDS=25
-HEADLESS=0  # set to 1 to enable headless extraction (if implemented)
 ```
 
 > Keep credentials private. For production, consider a secrets manager.
@@ -133,7 +137,7 @@ Troubleshooting / Updating Selectors:
 2. Open the failing profile in a normal Chrome window (or the persisted profile directory) and inspect elements (Right‑click → Inspect) to find updated class names.
 3. Edit the relevant lookup in the functions file (e.g., `driver.find_element(By.CLASS_NAME, "newClass")`).
 4. Restart the LinkedIn service.
-5. For iterative debugging, create a minimal notebook (see `DEBUGGER_NOTEBOOKS/`) to manually run the extraction logic and print raw HTML snippets.
+5. For iterative debugging, use the notebooks (see `DEBUGGER_NOTEBOOKS/`) to manually run the extraction logic and print raw HTML snippets.
 
 Best Practices:
 * Avoid heavy rapid scraping (risk of temporary blocks).
@@ -179,8 +183,11 @@ Health check:
 curl http://127.0.0.1:8001/scorer_tool/health
 ```
 
-### 5.3 (Optional) Prepare Job Description
-Place a file in `ollama_recruiter/data/jd_input/` named `job_description.txt` (or use a timestamped file). The agent will load the most recent.
+### 5.3 Prepare Job Description
+If you attach a text file containing the job description:
+	- The file will be loaded into `ollama_recruiter/data/jd_input/` saved with its name + timestamp, then renamed `job_description.txt` and used for scoring.
+else:
+	- The agent will only return the cnadidates wuthout scoring them against the job description.
 
 ### 5.4 Run the Agent (CLI / Streamlit)
 Environment: activate `venv_agent`.
@@ -322,7 +329,9 @@ Get-ChildItem "ollama_recruiter/data/jd_history" -Filter *.txt | Sort-Object Las
 | JD not archived but JSONs deleted | JD copy logic edge case | Confirm original JD still existed; ensure you didn't start with only `job_description.txt`. |
 | Agent returns only links (no scores) | `test_mode_score=True` or scoring error | Check scorer logs & ensure JD file present. |
 
-Logging: watch the terminal running each service for stack traces and debug messages (search/extract scaffolding uses `_log`).
+Logging: watch the terminal running each service for stack traces and debug messages (search/extract scaffolding uses `_log`) when setting iDEBBUGING=True inside the `Full system\linkedin_api\server.py` file.
+- If your issue isn’t listed here, please [raise an issue](../../issues) on this repository with full logs and context.
+
 
 ---
 
@@ -331,15 +340,9 @@ Logging: watch the terminal running each service for stack traces and debug mess
 * Replace raw Selenium selectors with resilient XPath + heuristics.
 * Add CI test harness mocking LinkedIn HTML snapshots.
 * Provide Dockerfiles per service for reproducible deployment.
-
 ---
 
-## 9. License & Attribution
-Add your license information here (e.g., MIT). Ensure no proprietary LinkedIn data is stored or redistributed—use responsibly and comply with platform terms.
-
----
-
-## 10. Quick Start (TL;DR)
+## 9. Quick Start (TL;DR)
 ```powershell
 # 1. Create 2 envs (server + agent) & install deps (see section 2.3)
 # 2. Set .env with LinkedIn credentials & CHROMEDRIVER_PATH
