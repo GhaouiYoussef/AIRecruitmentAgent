@@ -305,3 +305,4 @@ ollama_recruiter/data/jd_history/
 ollama_recruiter/data/jd_input/
 
 Full system/linkedin_api/content_extractor/__pycache__/
+__pycache__
