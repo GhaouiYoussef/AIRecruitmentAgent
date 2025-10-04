@@ -289,3 +289,4 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+Full system/linkedin_api/__pycache__/server.cpython-312.pyc
