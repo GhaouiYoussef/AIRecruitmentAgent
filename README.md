@@ -8,6 +8,10 @@ End‑to‑end modular system for: (1) LinkedIn talent discovery & profile extra
 
 ---
 
+
+https://github.com/user-attachments/assets/80a33011-ab23-4121-b947-59cade08964b
+
+
 ## 1. Project Overview
 
 ### High‑Level Architecture
