@@ -1,16 +1,18 @@
 import json
 import shutil
+import os
 from pathlib import Path
 
 # -------------------------------------------------------------
-# Global flag (user controlled):
-# When set to True, after successful scoring we will:
-#  1. Move the job description into jd_history with a timestamp
-#  2. Delete temporary candidate JSON profile files
-# Default False so current behaviour is unchanged. You can flip this
-# at runtime before calling linkedin_search_tool.
+# Global flag (user controlled): can be toggled either by editing this variable
+# or by setting environment variable CLEANUP_AND_ARCHIVE to 1/true/yes.
+# When enabled (True) AFTER a successful scoring run we will:
+#  1. Move the ORIGINAL job description file that was discovered (not the stabilized copy) into
+#     jd_history with a timestamped filename (leaving the stable job_description.txt in place).
+#  2. Delete all temporary candidate JSON profile files under Full system/tmp_candids_jsons.
+# Default is False to preserve artifacts for inspection.
 # -------------------------------------------------------------
-CLEANUP_AND_ARCHIVE = False
+CLEANUP_AND_ARCHIVE = os.getenv("CLEANUP_AND_ARCHIVE", "0").lower() in {"1", "true", "yes", "y"}
 
 # Fallback links used when requests is missing or remote calls fail early.
 FALLBACK_LINKS = [

@@ -1,0 +1,16 @@
+# Target Python: 3.12 (tested) / 3.11 should also work
+
+fastapi==0.110.3
+selenium==4.19.0
+python-dotenv==1.0.1
+pydantic==2.10.6
+beautifulsoup4==4.12.2
+pandas==2.1.4
+sentence-transformers==3.2.1
+faiss-cpu==1.8.0
+numpy==1.26.4
+
+# Notes:
+# - sentence-transformers will pull in transformers + torch (CPU) automatically; ensure you have adequate disk space.
+# - pandas depends on numpy; version pinned for stability with faiss & embeddings pipeline.
+# - If you need GPU acceleration later, install the appropriate torch build separately AFTER this base install.
