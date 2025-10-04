@@ -291,3 +291,17 @@ __marimo__/
 .streamlit/secrets.toml
 Full system/linkedin_api/__pycache__/server.cpython-312.pyc
 Full system/linkedin_api/content_extractor/__pycache__/functions.cpython-312.pyc
+Full system/tmp_candids_jsons/
+ollama_recruiter/__pycache__
+Full system/linkedin_api/__pycache__
+
+# lets remove any pycache folder
+**/__pycache__/
+Full system\linkedin_api\content_extractor\__pycache__
+# conda
+.conda/
+__pycache__/
+ollama_recruiter/data/jd_history/
+ollama_recruiter/data/jd_input/
+
+Full system/linkedin_api/content_extractor/__pycache__/
