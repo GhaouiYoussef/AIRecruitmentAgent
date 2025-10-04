@@ -180,7 +180,7 @@ def candidate_info_extractor(candidate_link, driver):
     # Visit main profile page
     driver.get(candidate_link)
     wait_for_element(driver, By.TAG_NAME, "body")  # Wait for general body load
-    # time.sleep(5)  # additional wait to ensure dynamic content loads
+    time.sleep(5)  # additional wait to ensure dynamic content loads
 
     soup = bs4.BeautifulSoup(driver.page_source, 'lxml')
     sections = soup.find_all('section', {'class': 'artdeco-card pv-profile-card break-words mt2'})
