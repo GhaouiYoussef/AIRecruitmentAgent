@@ -60,10 +60,11 @@ You will create three isolated virtual environments—one per service—to keep 
   * Official download: https://chromedriver.chromium.org/downloads
   * Put the executable somewhere stable (e.g. `C:/tools/chromedriver/chromedriver.exe`).
 * (Optional) `Ollama` installed locally for LLM inference: https://ollama.com
+* Hardware Note: This system was developed and tested **on CPU only** (no GPU required). Embedding & model inference paths default to CPU; if you later add GPU support, ensure dependencies (e.g., CUDA-enabled torch) are pinned accordingly.
 
 ### 2.2 Clone Repository
 ```powershell
-git clone <your-fork-or-origin-url> AIRecruitmentAgent
+git clone https://github.com/GhaouiYoussef/AIRecruitmentAgent.git
 cd AIRecruitmentAgent
 ```
 
