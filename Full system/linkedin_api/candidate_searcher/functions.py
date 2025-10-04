@@ -9,10 +9,10 @@ from selenium.webdriver.support.ui import WebDriverWait
 
 # Constant variables
 ## candidate libnnk scrapping
-DIV_section_class = "_07a564f8"
+DIV_section_class = "a59b534c"
 ## pagination buttons
-LI_section_class = "_6ece25d4   "
-pagination_btn_class = "c726258b  "
+LI_section_class = "_45d059dd    "
+pagination_btn_class = "_84bfc510   "
 # ----------------------------------------------------------------------------------
 def linkedin_query_search(driver, query):
     """Perform a LinkedIn search query with optional filters."""

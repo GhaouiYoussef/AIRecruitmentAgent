@@ -1,28 +1,57 @@
-from fastapi import FastAPI, HTTPException, Query
-from pydantic import BaseModel
+"""LinkedIn Search & Candidate Scoring API.
+
+This module exposes a FastAPI application that provides:
+1. LinkedIn search & profile extraction using a shared Selenium driver.
+2. Candidate scoring utilities (load profiles + score job description).
+
+The file was reorganized for clarity: grouped imports, constants/config,
+logging helpers, Selenium driver management, search/extract endpoints,
+and scoring endpoints. Functionality is intentionally unchanged aside
+from cosmetic/logging improvements.
+"""
+
+# ---------------------------------------------------------------------------
+# Standard Library Imports
+# ---------------------------------------------------------------------------
 import os
-from dotenv import load_dotenv
 import time
+import glob
 import asyncio
 import threading
 from contextlib import contextmanager
-import os
-import glob
 from typing import Dict, Optional, List
 
-from fastapi import FastAPI, HTTPException
+# ---------------------------------------------------------------------------
+# Third-Party Imports
+# ---------------------------------------------------------------------------
+from dotenv import load_dotenv
+from fastapi import FastAPI, HTTPException, Query
 from pydantic import BaseModel, Field, validator
+
+# Selenium
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 
 
 load_dotenv()
 
-# toggle this at the top of the file to enable/disable debug prints
-# Set to True to enable prints: iDEBBUGING = True
-# Default is False to avoid noisy output in production
-iDEBBUGING = True
+__all__ = [
+    "app",
+]
 
-# small helper for timestamped debug prints (gated by iDEBBUGING)
+# ---------------------------------------------------------------------------
+# Debug / Logging Utilities
+# ---------------------------------------------------------------------------
+# Toggle to enable/disable debug prints. (Kept original variable name for backwards
+# compatibility, though the conventional spelling would be DEBUG or DEBUGGING.)
+iDEBBUGING = True  # Set to False to silence _log output
+
+# Small helper for timestamped debug prints (gated by iDEBBUGING)
 def _log(msg: str):
     try:
         if not globals().get('iDEBBUGING'):
@@ -32,26 +61,36 @@ def _log(msg: str):
     ts = time.strftime("%Y-%m-%d %H:%M:%S")
     print(f"[{ts}] {msg}", flush=True)
 
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 
-# reuse your functions (use package-relative import; uvicorn runs this module as `linkedin_api.server`)
-from .candidate_searcher.functions import get_candidates_links, linkedin_query_search
+# ---------------------------------------------------------------------------
+# Local Imports (package-relative)
+# ---------------------------------------------------------------------------
+from .candidate_searcher.functions import (
+    get_candidates_links,
+    linkedin_query_search,
+)
 from .content_extractor.functions import candidate_info_extractor
 from .candidate_scorer.functions import CandidateScorer, DEFAULT_WEIGHTS
 
+
+# ---------------------------------------------------------------------------
+# FastAPI App Initialization
+# ---------------------------------------------------------------------------
 app = FastAPI(title="LinkedIn Search API")
 
+# ---------------------------------------------------------------------------
+# Search Models
+# ---------------------------------------------------------------------------
 class SearchResponse(BaseModel):
     query: str
     num_candidates: int
     links: list[str]
     count: int
 
+
+# ---------------------------------------------------------------------------
+# Selenium Driver Helpers
+# ---------------------------------------------------------------------------
 def _create_driver(chromedriver_path: str, profile_dir: str | None = None):
     _log(f"Creating Chrome driver using chromedriver at: {chromedriver_path}")
     chrome_options = Options()
@@ -300,10 +339,10 @@ async def restart_driver():
     return {"ok": True, "message": "Driver restarted and ready."}
 
 # (NewBasePy312) PS C:\YoussefENSI_backup\Eukliadia-test> uvicorn linkedin_api.server:app --reload --host 127.0.0.1 --port 8000
-
-
-
-# ---- Request/Response Models ----
+"""Scorer Tool Section"""
+# ---------------------------------------------------------------------------
+# Scoring Request/Response Models
+# ---------------------------------------------------------------------------
 class LoadProfilesRequest(BaseModel):
     json_folder: str = Field(..., description="Folder containing candidate JSON files")
     exp_agg: str = Field("sum_norm", description="Experience aggregation mode: sum | mean | sum_norm")
@@ -344,7 +383,9 @@ class ScoreResponse(BaseModel):
     results: List[ScoreItem]
 
 
-# ---- Global Scorer State ----
+# ---------------------------------------------------------------------------
+# Global Scorer State
+# ---------------------------------------------------------------------------
 SCORER: Optional[CandidateScorer] = None
 
 

@@ -9,8 +9,12 @@ import time
 import re
 import bs4
 import pandas as pd
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException
 
-LI_EACH_EXP = 'artdeco-list__item wGxeXISsaJCeiVVnmaTneYElILlxgrMuULyU lndVLTIqemEYVwyXFSGJfYDwjuqsCaiWyaKlfk'
+LI_EXPERIENCE_CLASS = 'artdeco-list__item wGxeXISsaJCeiVVnmaTneYElILlxgrMuULyU lndVLTIqemEYVwyXFSGJfYDwjuqsCaiWyaKlfk'
 def text_of(sel: bs4.element.Tag | None) -> str | None:
     return sel.get_text(strip=True) if sel else None
 
@@ -118,8 +122,7 @@ def parse_education(education_section: bs4.element.Tag) -> Tuple[List[Dict[str, 
             'description': description
         })
 
-    df = pd.DataFrame(rows)
-    return rows, df
+    return rows
 
 
 def parse_languages(languages_section: bs4.element.Tag) -> Tuple[List[Dict[str, Any]], pd.DataFrame, str | None]:
@@ -151,10 +154,7 @@ def parse_languages(languages_section: bs4.element.Tag) -> Tuple[List[Dict[str, 
             level = lang_mapper.get(key)
         rows.append({'language': hidden, 'level': level})
 
-    df = pd.DataFrame(rows)
-    show_all = languages_section.select_one('a#navigation-index-see-all-languages')
-    show_all_url = show_all['href'] if show_all and show_all.has_attr('href') else None
-    return rows, df, show_all_url
+    return rows
 
 
 def parse_skills(src: bs4.element.Tag) -> str:
@@ -162,57 +162,61 @@ def parse_skills(src: bs4.element.Tag) -> str:
     return ' '.join(skills)
 
 
-def candidate_info_extractor(candidate_link: str, driver) -> Dict[str, Any]:
-    """Navigate to a candidate profile and extract structured sections.
 
-    Note: this function expects an active Selenium `driver` already
-    authenticated to LinkedIn. It performs blocking navigation and simple
-    sleeps to wait for pages to load.
-    """
+def wait_for_element(driver, by, value, timeout=10):
+    try:
+        return WebDriverWait(driver, timeout).until(
+            EC.presence_of_element_located((by, value))
+        )
+    except TimeoutException:
+        return None
+
+def candidate_info_extractor(candidate_link, driver):
+    # Visit main profile page
     driver.get(candidate_link)
-    time.sleep(5)
-    page_source = driver.page_source
-    soup = bs4.BeautifulSoup(page_source, 'lxml')
+    wait_for_element(driver, By.TAG_NAME, "body")  # Wait for general body load
+
+    soup = bs4.BeautifulSoup(driver.page_source, 'lxml')
     sections = soup.find_all('section', {'class': 'artdeco-card pv-profile-card break-words mt2'})
 
-    # experience
+    # ----- Experience -----
     experience_rows = []
     for sec in sections:
         if sec.find('div', {'id': 'experience'}):
-            experience_section = sec
-            experience_entries = experience_section.find_all('li', {'class': LI_EACH_EXP})
+            experience_entries = sec.find_all('li', {'class': LI_EXPERIENCE_CLASS})
             experience_rows = parse_experience_entries(experience_entries)
-            break
+            break  # Stop once found
 
-    # education
+    # ----- Education -----
     education_rows = []
     for sec in sections:
         if sec.find('div', {'id': 'education'}):
-            education_section = sec
-            education_rows, _ = parse_education(education_section)
+            education_rows= parse_education(sec)
             break
 
-    # languages
+    # ----- Languages -----
     driver.get(candidate_link + '/details/languages/')
-    time.sleep(5)
-    languages_page_source = driver.page_source
-    languages_soup = bs4.BeautifulSoup(languages_page_source, 'lxml')
-    languages_rows, _, _ = parse_languages(languages_soup)
+    wait_for_element(driver, By.CSS_SELECTOR, 'section.artdeco-card')  # wait for language section
 
-    # skills
+    languages_soup = bs4.BeautifulSoup(driver.page_source, 'lxml')
+    languages_rows = parse_languages(languages_soup)
+
+    # ----- Skills -----
     driver.get(candidate_link + '/details/skills/')
-    time.sleep(5)
-    skills_page_source = driver.page_source
-    skills_soup = bs4.BeautifulSoup(skills_page_source, 'lxml')
+    wait_for_element(driver, By.CSS_SELECTOR, 'section.artdeco-card.pb3')  # wait for skills section
+
+    skills_soup = bs4.BeautifulSoup(driver.page_source, 'lxml')
     ember_div = skills_soup.find('section', class_='artdeco-card pb3')
+
     if ember_div:
         skills_row = parse_skills(ember_div)
     else:
+        print(f"[WARN] Couldn't find skills section for {candidate_link}")
         skills_row = parse_skills(skills_soup)
 
     return {
         'experience': experience_rows,
         'education': education_rows,
         'languages': languages_rows,
-        'skills': skills_row,
+        'skills': skills_row
     }

@@ -23,14 +23,9 @@ def linkedin_search_tool(query: str, num_candidates: int = 5):
             links = data.get("links") or data.get("results") or data.get("candidates")
         if not links or not isinstance(links, list):
             raise ValueError(f"unexpected response shape: {data}")
-        # if TOP_K != None:
-        return links
+        # We will no longer return the link of candidates as it is, but we will scrape each candidate using the extractor tool, then the scraped candidates will be sent to the scorer model to return a dictionary ranking the candidates
+        # return links
+
     except Exception as e:
         print(f"linkedin_search_tool: remote call failed ({e}); returning fallback links")
-        return [
-            "https://www.linkedin.com/in/saber-chadded-36552b192/",
-            "https://www.linkedin.com/in/guesmi-wejden-5269222aa/",
-            "https://www.linkedin.com/in/hichem-dridi/",
-            "https://www.linkedin.com/in/nour-hamdi/",
-            "https://www.linkedin.com/in/iyadh-chaouch-072077225/",
-        ]
+        return []
