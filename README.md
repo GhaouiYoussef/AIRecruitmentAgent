@@ -74,8 +74,8 @@ The previous separation into three environments is deprecated (the two old requi
 
 ### 2.2 Clone Repository
 ```powershell
-git clone https://github.com/GhaouiYoussef/AIRecruitmentAgent.git
-cd AIRecruitmentAgent
+git clone https://github.com/GhaouiYoussef/Ollama-Local-Recruiter-Agent.git
+cd Ollama-Local-Recruiter-Agent
 ```
 
 ### 2.3 Create & Activate Virtual Environments (2 total)
