@@ -1,9 +1,9 @@
 <div align="center">
 
-# Local-AI-Recruiter — Ollama + LangGraph agent (CPU friendly)
-Privacy-first, local recruitment assistant that scores and summarizes candidates using Ollama (local models) and orchestrated agents with LangGraph.
+# Local-AI-Recruiter — Ollama + Pydantic agent (CPU friendly)
+Privacy-first, local recruitment assistant that scores and summarizes candidates using Ollama (local models) and lightweight Pydantic-based tools for structured tool-calls and data validation.
 
-End‑to‑end modular system for: (1) LinkedIn talent discovery & profile extraction, (2) semantic multi‑factor candidate scoring, and (3) an interactive LLM assistant (Ollama) that orchestrates the workflow via tool calls.
+End-to-end modular system for: (1) LinkedIn talent discovery & profile extraction, (2) semantic multi-factor candidate scoring, and (3) an interactive LLM assistant (Ollama) that orchestrates the workflow via validated tool calls.
 
 </div>
 
