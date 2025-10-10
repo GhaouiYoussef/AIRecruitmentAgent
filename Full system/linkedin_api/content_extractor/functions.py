@@ -18,7 +18,7 @@ import os
 # Set the environment variable to disable oneDNN optimizations
 
 os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
-LI_EXPERIENCE_CLASS = 'artdeco-list__item JbUlKrwJZIKsPIRsFwTloRqUskJQvmJlyE IwDdCXUNWfBpIItubHorVUPbXlFWhRBg'
+LI_EXPERIENCE_CLASS = 'artdeco-list__item ZUCTrCoHrhEVuVPEOKfzAxFGINwKBBoKJh RSWKElsygilrqjBXkqXjrfWdfUkoLmQLkUyNTo'
 
 def text_of(sel: bs4.element.Tag | None) -> str | None:
     return sel.get_text(strip=True) if sel else None

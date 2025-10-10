@@ -23,6 +23,22 @@ FALLBACK_LINKS = [
     "https://www.linkedin.com/in/iyadh-chaouch-072077225/",
 ]
 
+# -------------------------------------------------------------
+# Timeout configuration (seconds) — overridable via environment
+# Defaults are intentionally generous to accommodate slow services.
+# -------------------------------------------------------------
+SEARCH_TIMEOUT = float(os.getenv("SEARCH_TIMEOUT", "90"))
+EXTRACT_TIMEOUT = float(os.getenv("EXTRACT_TIMEOUT", "180"))
+SCORER_HEALTH_TIMEOUT = float(os.getenv("SCORER_HEALTH_TIMEOUT", "20"))
+SCORER_LOAD_TIMEOUT = float(os.getenv("SCORER_LOAD_TIMEOUT", "300"))
+SCORER_SCORE_TIMEOUT = float(os.getenv("SCORER_SCORE_TIMEOUT", "300"))
+# -------------------------------------------------------------
+SCORER_URL = os.getenv("CANDIDATE_SCORER_URL", "http://localhost:8001/scorer_tool")
+
+
+
+
+
 
 def _import_requests():
     """Local import helper so module import does not hard‑fail if requests missing."""
@@ -52,7 +68,7 @@ def _search_candidates(requests, service_url: str, query: str, num_candidates: i
         resp = requests.get(
             service_url,
             params={"query": query, "num_candidates": int(num_candidates)},
-            timeout=30,
+            timeout=SEARCH_TIMEOUT,
         )
         resp.raise_for_status()
         data = resp.json()
@@ -75,6 +91,7 @@ def _extract_and_save_profiles(requests, links: list[str], extraction_base: str,
     can inspect JSON; early return shape preserved if caller set test_mode_extract.
     """
     saved_files: list[str] = []
+    payloads : list[dict] = []
     if test_mode_score:
         return saved_files
 
@@ -83,7 +100,7 @@ def _extract_and_save_profiles(requests, links: list[str], extraction_base: str,
             parts = [p for p in raw_link.rstrip("/").split("/") if p]
             candidate_id = parts[-1] if parts else "unknown"
             encoded = requests.utils.quote(raw_link, safe="")
-            resp = requests.get(f"{extraction_base}?url={encoded}", timeout=60)
+            resp = requests.get(f"{extraction_base}?url={encoded}", timeout=EXTRACT_TIMEOUT)
             resp.raise_for_status()
             payload = resp.json()
             if isinstance(payload, dict) and isinstance(payload.get("result"), dict):
@@ -92,12 +109,13 @@ def _extract_and_save_profiles(requests, links: list[str], extraction_base: str,
             with out_path.open("w", encoding="utf-8") as f:
                 json.dump(payload, f, ensure_ascii=False, indent=2)
             saved_files.append(str(out_path))
+            payloads.append(payload)
         except Exception as e:
             print(f"Error extracting {raw_link}: {e}")
 
     if not test_mode_extract:
         print(f"linkedin_search_tool: extracted {len(saved_files)} profiles to {out_dir}")
-    return saved_files
+    return saved_files, payloads
 
 
 def _prepare_job_description(repo_root: Path) -> tuple[str | None, Path | None]:
@@ -133,13 +151,13 @@ def _prepare_job_description(repo_root: Path) -> tuple[str | None, Path | None]:
         return None, None
 
 
-def _score_candidates(requests, scorer_url: str, out_dir: Path, job_text: str) -> dict[str, float] | None:
+def _score_candidates(requests, repo_root: Path, job_text: str) -> dict[str, float] | None:
     """Load extracted profiles into scoring service and request scores.
 
     Returns mapping of candidate_id/link to float score or None if scoring failed.
     """
     try:
-        health = requests.get(f"{scorer_url}/health", timeout=10)
+        health = requests.get(f"{SCORER_URL}/health", timeout=SCORER_HEALTH_TIMEOUT)
         if health.status_code != 200:
             print(f"Scoring API health check failed: status {health.status_code}")
             return None
@@ -149,11 +167,16 @@ def _score_candidates(requests, scorer_url: str, out_dir: Path, job_text: str) -
         return None
 
     try:
+        out_dir = repo_root / "Full system" / "tmp_candids_jsons"
         load_payload = {"json_folder": str(out_dir), "exp_agg": "sum_norm", "reset": True}
-        load_resp = requests.post(f"{scorer_url}/load_profiles", json=load_payload, timeout=120)
+        load_resp = requests.post(
+            f"{SCORER_URL}/load_profiles", json=load_payload, timeout=SCORER_LOAD_TIMEOUT
+        )
         if load_resp.status_code == 200:
             load_data = load_resp.json()
-            print(f"Loaded profiles: {load_data.get('indexed_profiles', 0)} from {load_data.get('source', '')}")
+            print(
+                f"Loaded profiles: {load_data.get('indexed_profiles', 0)} from {load_data.get('source', '')}"
+            )
         else:
             print(f"Failed to load profiles: {load_resp.status_code} {load_resp.text}")
             return None
@@ -162,12 +185,16 @@ def _score_candidates(requests, scorer_url: str, out_dir: Path, job_text: str) -
         return None
 
     try:
+        if not job_text:
+            job_text, _ = _prepare_job_description(repo_root)
         score_payload = {
             "job_text": job_text,
             "weights": {"experience": 0.4, "skills": 0.4, "education": 0.3, "languages": 0.0},
             "top_k_search": 200,
         }
-        score_resp = requests.post(f"{scorer_url}/score", json=score_payload, timeout=180)
+        score_resp = requests.post(
+            f"{SCORER_URL}/score", json=score_payload, timeout=SCORER_SCORE_TIMEOUT
+        )
         if score_resp.status_code != 200:
             print(f"Failed to score profiles: {score_resp.status_code} {score_resp.text}")
             return None

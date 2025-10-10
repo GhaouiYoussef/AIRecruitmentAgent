@@ -1,0 +1,6 @@
+fastmcp==2.8.1
+httpx==0.28.1
+langchain-ollama==0.3.2
+loguru==0.7.3
+mcp-use
+mcp[cli]

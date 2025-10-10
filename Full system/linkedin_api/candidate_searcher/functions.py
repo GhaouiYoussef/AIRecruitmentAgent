@@ -9,50 +9,61 @@ from selenium.webdriver.support.ui import WebDriverWait
 
 # Constant variables
 ## candidate libnnk scrapping
-DIV_section_class = "a59b534c"
+DIV_section_class = "_0ac22ca2"
 ## pagination buttons
-LI_section_class = "_45d059dd    "
-pagination_btn_class = "_84bfc510   "
+LI_section_class = "dd6ce568      "
+pagination_btn_class = "_39f8e873     "
+
+# Small helper for timestamped debug prints (gated by iDEBBUGING)
+def _log(msg: str):
+    try:
+        if not globals().get('iDEBBUGING'):
+            return
+    except Exception:
+        return
+    ts = time.strftime("%Y-%m-%d %H:%M:%S")
+    print(f"[{ts}] {msg}", flush=True)
+    
 # ----------------------------------------------------------------------------------
 def linkedin_query_search(driver, query):
     """Perform a LinkedIn search query with optional filters."""
     # we try using the search bar, if there is an error we fallback to url query
-    try:
-        search_input = driver.find_element(By.CLASS_NAME, 'search-global-typeahead__input')
-        search_input.send_keys(query)
-        search_input.send_keys(u'\ue007')
+    # try:
+    #     search_input = driver.find_element(By.CLASS_NAME, 'search-global-typeahead__input')
+    #     search_input.send_keys(query)
+    #     search_input.send_keys(u'\ue007')
 
-    except Exception as e:
-        print(f"Error using search bar: {e}")
-        # Fallback to URL query
-        base_url = "https://www.linkedin.com/search/results/people/?keywords="
-        query = query.replace(" ", "%20")
-        url = base_url + query
-        driver.get(url)
+    # except Exception as e:
+    # print(f"Error using search bar: {e}")
+    # Fallback to URL query
+    base_url = "https://www.linkedin.com/search/results/people/?keywords="
+    query = query.replace(" ", "%20")
+    url = base_url + query
+    driver.get(url)
     time.sleep(5)  # wait for the page to load
 
-    # go to poeple section
-    li_list = WebDriverWait(driver, 10).until(
-    EC.presence_of_all_elements_located((By.CSS_SELECTOR, "li.search-reusables__primary-filter"))
-    )
+    # # go to poeple section
+    # li_list = WebDriverWait(driver, 10).until(
+    # EC.presence_of_all_elements_located((By.CSS_SELECTOR, "li.search-reusables__primary-filter"))
+    # )
 
-    target_btn = None
-    for li in li_list:
-        try:
-            # find the button inside this li (uses the shorter specific class)
-            btn = li.find_element(By.CSS_SELECTOR, "button.search-reusables__filter-pill-button")
-            # filter by visible text if you want a specific pill
-            if "People" not in li.text: continue
-            target_btn = btn
-            break
-        except Exception:
-            continue
+    # target_btn = None
+    # for li in li_list:
+    #     try:
+    #         # find the button inside this li (uses the shorter specific class)
+    #         btn = li.find_element(By.CSS_SELECTOR, "button.search-reusables__filter-pill-button")
+    #         # filter by visible text if you want a specific pill
+    #         if "People" not in li.text: continue
+    #         target_btn = btn
+    #         break
+    #     except Exception:
+    #         continue
 
-    if target_btn is None:
-        raise Exception("scrapper didnt find people section, check the div classname")
-    else:
-        target_btn.click()
-        time.sleep(5)  # wait for the page to load
+    # if target_btn is None:
+    #     raise Exception("scrapper didnt find people section, check the div classname")
+    # else:
+    #     target_btn.click()
+    #     time.sleep(5)  # wait for the page to load
     
  
 
@@ -61,10 +72,14 @@ def linkedin_query_search(driver, query):
 def pagination_button_store(driver, num_pages=10, LI_section_class=LI_section_class, pagination_btn_class=pagination_btn_class) -> dict:
     pages_buttons = {}
     # check if the class name is correct
+    try:
+        li_list = WebDriverWait(driver, 10).until(
+            EC.presence_of_all_elements_located((By.CSS_SELECTOR, f"li.{LI_section_class}"))
+        )
+    except Exception as e:
+        _log(f"Error finding pagination elements: {e}")
+        return pages_buttons
 
-    li_list = WebDriverWait(driver, 10).until(
-                EC.presence_of_all_elements_located((By.CSS_SELECTOR, f"li.{LI_section_class}"))
-            )
     target_btn = None
 
     for li in li_list:
@@ -96,7 +111,8 @@ def get_candidates_links(driver, num_candidates=10) -> list:
     for page in range(1, NUM_PAGES + 1):
 
         # --- Pagination buttons
-        pages_buttons = pagination_button_store(driver, num_pages=NUM_PAGES) # should be run after each pagination change
+        if page > 1:
+            pages_buttons = pagination_button_store(driver, num_pages=NUM_PAGES) # should be run after each pagination change
 
 
         cards = WebDriverWait(driver, 10).until(
@@ -118,7 +134,7 @@ def get_candidates_links(driver, num_candidates=10) -> list:
                 candidates_links.append(href)
 
         candidates_links = list_links_check(list(dict.fromkeys([u for u in candidates_links if u])))
-        print("links found:", len(candidates_links), candidates_links)
+        _log(f"links found: {len(candidates_links)}, {candidates_links}")
 
         FULL_CANDIDATES_LIST.extend(candidates_links)
 
