@@ -77,20 +77,20 @@ async def score_candidates(
     return await asyncio.to_thread(tools.score_candidates, job_text=job_text)
 
 
-# Utility re-exports
-@mcp.tool()
-async def generate_md5_hash(input_str: str) -> str:
-    return await asyncio.to_thread(tools.generate_md5_hash, input_str)
+# # Utility re-exports
+# @mcp.tool()
+# async def generate_md5_hash(input_str: str) -> str:
+#     return await asyncio.to_thread(tools.generate_md5_hash, input_str)
 
 
-@mcp.tool()
-async def count_characters(input_str: str) -> int:
-    return await asyncio.to_thread(tools.count_characters, input_str)
+# @mcp.tool()
+# async def count_characters(input_str: str) -> int:
+#     return await asyncio.to_thread(tools.count_characters, input_str)
 
 
-@mcp.tool()
-async def get_first_half(input_str: str) -> str:
-    return await asyncio.to_thread(tools.get_first_half, input_str)
+# @mcp.tool()
+# async def get_first_half(input_str: str) -> str:
+#     return await asyncio.to_thread(tools.get_first_half, input_str)
 
 
 def _self_tests():  # pragma: no cover
