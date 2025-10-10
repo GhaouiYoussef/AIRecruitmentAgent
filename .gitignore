@@ -306,3 +306,7 @@ ollama_recruiter/data/jd_input/
 
 Full system/linkedin_api/content_extractor/__pycache__/
 __pycache__
+
+C:\YoussefENSI_backup\Eukliadia-test\Git Repo\self-mcp
+# Ignore local self-mcp virtual environment (use repo-relative path, not absolute Windows path)
+self-mcp/
