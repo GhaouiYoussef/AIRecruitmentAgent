@@ -23,7 +23,7 @@ https://github.com/user-attachments/assets/80a33011-ab23-4121-b947-59cade08964b
 │  Extraction Service    │ <----> │ (FAISS + Embeddings)   │ <----> │ (Ollama + Streamlit)    │
 │  (FastAPI + Selenium)  │        │  /scorer_tool/*        │        │  tools: search/score    │
 └──────────┬─────────────┘        └──────────┬─────────────┘        └──────────┬─────────────┘
-		 │  (Selenium drives Chrome)        │                               │
+		  │  (Selenium drives Chrome)        │                               │
 		 │                                   │                               │
 		 ▼                                   ▼                               ▼
    LinkedIn Web UI                    JSON Candidate Profiles          User queries (JD / intent)
@@ -182,6 +182,46 @@ Health check:
 ```powershell
 curl http://127.0.0.1:8001/scorer_tool/health
 ```
+
+### 5.2 MCP mode: Client + Server (advanced)
+This optional path demonstrates the Model Context Protocol (MCP) to wire tools as a local MCP server and call them from a client. It’s more complex than the Streamlit path, but it showcases how to compose multiple tools and extend the agent with minimal coupling. For day-to-day recruiting runs, we still recommend the combined LinkedIn+Scorer services orchestrated by the agent UI (see 5.4) to leverage the repeated workflow of search → scrape → score.
+
+Requirements:
+- Keep the two FastAPI services running (5.1) because the MCP tools call those HTTP endpoints under the hood.
+- A Python venv for MCP with dependencies from `self_mcp_server/requirements.txt`.
+- MCP CLI installed so you can run `mcp dev`.
+
+Set up MCP environment (suggested):
+```powershell
+python -m venv venv_mcp
+./venv_mcp/Scripts/Activate.ps1
+pip install --upgrade pip
+pip install -r "self_mcp_server/requirements.txt"
+# Install the MCP CLI (pick one):
+pip install mcp  # or: pipx install mcp
+```
+
+Start the MCP server (in a terminal with the MCP venv active):
+```powershell
+mcp dev .\self_mcp_server\mcp_server_separate.py
+```
+
+
+Run the MCP client (separate terminal with the MCP venv active):
+```powershell
+python .\self_mcp_server\mcp_client.py
+```
+
+
+Alternate path if you placed the client under `ollama_recruiter` (match your local layout):
+```powershell
+python .\ollama_recruiter\mcp_client.py
+```
+
+
+Notes
+- Ensure the LinkedIn Search/Extraction and Candidate Scorer services are running before invoking MCP tools, or the MCP server will return tool errors when it calls those endpoints.
+- This MCP setup is intended to illustrate the power of MCP (multi-tool composition, pluggability). The recommended flow for the recruiting agent remains combining the services with the Streamlit UI to efficiently repeat search → scrape → score.
 
 ### 5.3 Prepare Job Description
 If you attach a text file containing the job description:
@@ -353,6 +393,22 @@ Logging: watch the terminal running each service for stack traces and debug mess
 # 5. Terminal 3 (Agent UI)
 ./venv_agent/Scripts/Activate.ps1; streamlit run ollama_recruiter/streamlit_app.py
 # 6. Interact via UI; watch tmp_candids_jsons fill with JSON; scores appear.
+```
+
+Optional: MCP variant (advanced)
+```powershell
+# MCP env (once):
+python -m venv venv_mcp
+./venv_mcp/Scripts/Activate.ps1
+pip install --upgrade pip
+pip install -r "self_mcp_server/requirements.txt"
+pip install mcp  # or: pipx install mcp
+
+# Start MCP server (new terminal):
+mcp dev .\self_mcp_server\mcp_server_separate.py
+
+# Run MCP client (another terminal):
+python .\self_mcp_server\mcp_client.py
 ```
 
 Happy recruiting!
