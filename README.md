@@ -1,9 +1,9 @@
 <div align="center">
 
-# Local-AI-Recruiter — Ollama + LangGraph agent (CPU friendly)
-Privacy-first, local recruitment assistant that scores and summarizes candidates using Ollama (local models) and orchestrated agents with LangGraph.
+# Local-AI-Recruiter — Ollama + Pydantic agent (CPU friendly) + MCP Integration inside the `mcp-agent-master` branch
+Privacy-first, local recruitment assistant that scores and summarizes candidates using Ollama (local models) and lightweight Pydantic-based tools for structured tool-calls and data validation.
 
-End‑to‑end modular system for: (1) LinkedIn talent discovery & profile extraction, (2) semantic multi‑factor candidate scoring, and (3) an interactive LLM assistant (Ollama) that orchestrates the workflow via tool calls.
+End-to-end modular system for: (1) LinkedIn talent discovery & profile extraction, (2) semantic multi-factor candidate scoring, and (3) an interactive LLM assistant (Ollama) that orchestrates the workflow via validated tool calls.
 
 </div>
 
@@ -23,7 +23,7 @@ https://github.com/user-attachments/assets/80a33011-ab23-4121-b947-59cade08964b
 │  Extraction Service    │ <----> │ (FAISS + Embeddings)   │ <----> │ (Ollama + Streamlit)    │
 │  (FastAPI + Selenium)  │        │  /scorer_tool/*        │        │  tools: search/score    │
 └──────────┬─────────────┘        └──────────┬─────────────┘        └──────────┬─────────────┘
-		  │  (Selenium drives Chrome)        │                               │
+		 │  (Selenium drives Chrome)        │                               │
 		 │                                   │                               │
 		 ▼                                   ▼                               ▼
    LinkedIn Web UI                    JSON Candidate Profiles          User queries (JD / intent)
@@ -74,8 +74,8 @@ The previous separation into three environments is deprecated (the two old requi
 
 ### 2.2 Clone Repository
 ```powershell
-git clone https://github.com/GhaouiYoussef/AIRecruitmentAgent.git
-cd AIRecruitmentAgent
+git clone https://github.com/GhaouiYoussef/Ollama-Local-Recruiter-Agent.git
+cd Ollama-Local-Recruiter-Agent
 ```
 
 ### 2.3 Create & Activate Virtual Environments (2 total)
@@ -184,14 +184,14 @@ curl http://127.0.0.1:8001/scorer_tool/health
 ```
 
 ### 5.2 MCP mode: Client + Server (advanced)
-This optional path demonstrates the Model Context Protocol (MCP) to wire tools as a local MCP server and call them from a client. It’s more complex than the Streamlit path, but it showcases how to compose multiple tools and extend the agent with minimal coupling. For day-to-day recruiting runs, we still recommend the combined LinkedIn+Scorer services orchestrated by the agent UI (see 5.4) to leverage the repeated workflow of search → scrape → score.
+This optional path demonstrates the Model Context Protocol (MCP) to expose the project’s tools via a local MCP server and drive them from a client. It’s more flexible and showcases multi‑tool composition, but it’s more complex than the Streamlit flow. For routine recruiting runs, we still recommend the Agent/UI path which efficiently repeats search → scrape → score.
 
-Requirements:
-- Keep the two FastAPI services running (5.1) because the MCP tools call those HTTP endpoints under the hood.
+Requirements
+- Keep the two FastAPI services running (5.1). The MCP tools call those HTTP endpoints under the hood.
 - A Python venv for MCP with dependencies from `self_mcp_server/requirements.txt`.
 - MCP CLI installed so you can run `mcp dev`.
 
-Set up MCP environment (suggested):
+Suggested MCP environment setup
 ```powershell
 python -m venv venv_mcp
 ./venv_mcp/Scripts/Activate.ps1
@@ -201,27 +201,27 @@ pip install -r "self_mcp_server/requirements.txt"
 pip install mcp  # or: pipx install mcp
 ```
 
-Start the MCP server (in a terminal with the MCP venv active):
+Start the MCP server (new terminal, MCP venv active)
 ```powershell
 mcp dev .\self_mcp_server\mcp_server_separate.py
 ```
 
 
-Run the MCP client (separate terminal with the MCP venv active):
+Run the MCP client (another terminal, MCP venv active)
 ```powershell
 python .\self_mcp_server\mcp_client.py
 ```
 
 
-Alternate path if you placed the client under `ollama_recruiter` (match your local layout):
+Alternate client path (if your client lives under `ollama_recruiter` in your branch)
 ```powershell
 python .\ollama_recruiter\mcp_client.py
 ```
 
 
 Notes
-- Ensure the LinkedIn Search/Extraction and Candidate Scorer services are running before invoking MCP tools, or the MCP server will return tool errors when it calls those endpoints.
-- This MCP setup is intended to illustrate the power of MCP (multi-tool composition, pluggability). The recommended flow for the recruiting agent remains combining the services with the Streamlit UI to efficiently repeat search → scrape → score.
+- Ensure LinkedIn Search/Extraction and Candidate Scorer services are running first; otherwise MCP tool calls will fail.
+- MCP illustrates the power to add multiple tools and wire them cleanly. For the recruiting agent, combining services with the Streamlit UI remains the most ergonomic way to leverage the repeated search → scrape → score workflow.
 
 ### 5.3 Prepare Job Description
 If you attach a text file containing the job description:
@@ -412,4 +412,3 @@ python .\self_mcp_server\mcp_client.py
 ```
 
 Happy recruiting!
-
