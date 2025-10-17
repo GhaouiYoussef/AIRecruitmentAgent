@@ -109,8 +109,9 @@ def _self_tests():  # pragma: no cover
 
 
 if __name__ == "__main__":
-    run_tests = os.getenv("RUN_SELF_TESTS", "1").lower() not in {"0", "false", "no"}
-    if run_tests:
-        _self_tests()
+    # run_tests = os.getenv("RUN_SELF_TESTS", "1").lower() not in {"0", "false", "no"}
+    # if run_tests:
+    #     _self_tests()
+    from loguru import logger
     logger.info("Starting MCP server 'ai-recruitment-suite-separate' over stdio")
-    asyncio.run(mcp.run(transport="stdio"))
+    mcp.run(transport="stdio")

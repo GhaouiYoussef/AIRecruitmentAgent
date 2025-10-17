@@ -3,16 +3,16 @@ from selenium.webdriver.support import expected_conditions as EC
 import time
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
-
+import math
 
 
 
 # Constant variables
 ## candidate libnnk scrapping
-DIV_section_class = "_0ac22ca2"
+DIV_section_class = "_36e07d2a "
 ## pagination buttons
-LI_section_class = "dd6ce568      "
-pagination_btn_class = "_39f8e873     "
+LI_section_class = "_13f9efad"
+pagination_btn_class = "ad39c2f1"
 
 # Small helper for timestamped debug prints (gated by iDEBBUGING)
 def _log(msg: str):
@@ -70,7 +70,7 @@ def linkedin_query_search(driver, query):
 
 
 def pagination_button_store(driver, num_pages=10, LI_section_class=LI_section_class, pagination_btn_class=pagination_btn_class) -> dict:
-    pages_buttons = {}
+    _pages_buttons = {}
     # check if the class name is correct
     try:
         li_list = WebDriverWait(driver, 10).until(
@@ -78,7 +78,7 @@ def pagination_button_store(driver, num_pages=10, LI_section_class=LI_section_cl
         )
     except Exception as e:
         _log(f"Error finding pagination elements: {e}")
-        return pages_buttons
+        return _pages_buttons
 
     target_btn = None
 
@@ -89,16 +89,70 @@ def pagination_button_store(driver, num_pages=10, LI_section_class=LI_section_cl
         # We check in the li.text is a number and if its in the [2, num_pages+1] then we add it to the dict , and remove from the list [2, num_pages+1]
         if not li.text.isdigit() or int(li.text) not in range(1, num_pages + 1): continue
         target_btn = btn
-        pages_buttons[int(li.text)] = target_btn
+        _pages_buttons[int(li.text)] = target_btn
 
     if target_btn is None:
         raise Exception("Filter button not found in any li.search-reusables__primary-filter")
-    return pages_buttons
+    return _pages_buttons
+
 
 
 
 def get_candidates_links(driver, num_candidates=10) -> list:
     
+    # we create a cleaning function to mkae sure link is of a profile candid.startswith('https://www.linkedin.com/in/')
+    def list_links_check(links_list):
+        return [link for link in links_list if link.startswith('https://www.linkedin.com/in/')]
+    # Calculate the number of pages needed
+    NUM_PAGES = max(1, math.ceil(num_candidates / 10))
+    
+    FULL_CANDIDATES_LIST = []
+    
+    # we start in page 1 then at the end of the loop we click on the next page button
+    for page in range(1, NUM_PAGES + 1):
+
+        cards = WebDriverWait(driver, 10).until(
+            EC.presence_of_all_elements_located((By.CSS_SELECTOR, f"div.{DIV_section_class}"))
+        )
+
+        candidates_links = []
+        for card in cards:
+            href = None
+            try:
+                href = card.find_element(By.XPATH, "./ancestor::a[1]").get_attribute("href")
+            except Exception:
+                try:
+                    href = card.find_element(By.CSS_SELECTOR, "a").get_attribute("href")
+                except Exception:
+                    href = None
+
+            if href:
+                candidates_links.append(href)
+
+        candidates_links = list_links_check(list(dict.fromkeys([u for u in candidates_links if u])))
+        _log(f"links found: {len(candidates_links)}, {candidates_links}")
+
+        FULL_CANDIDATES_LIST.extend(candidates_links)
+
+        if page < NUM_PAGES:  # No need to click next on the last page
+            # Refresh pagination buttons before clicking next
+            pages_buttons = pagination_button_store(driver, num_pages=NUM_PAGES)
+            next_page_btn = pages_buttons.get(page + 1)
+            if next_page_btn:
+                next_page_btn.click()
+                time.sleep(5)  # wait for the page to load
+            else:
+                print(f"No button found for page {page + 1}, stopping.")
+
+                # check if we got enough candidates
+                if len(FULL_CANDIDATES_LIST) >= num_candidates:
+                    break
+                else:
+                    print(f"Only {len(FULL_CANDIDATES_LIST)} candidates found, less than requested {num_candidates}.")
+    if len(FULL_CANDIDATES_LIST) < num_candidates:
+        print(f"Only {len(FULL_CANDIDATES_LIST)} candidates found, less than requested {num_candidates}.")
+        return FULL_CANDIDATES_LIST
+    return FULL_CANDIDATES_LIST[:num_candidates]    
     # we create a cleaning function to mkae sure link is of a profile candid.startswith('https://www.linkedin.com/in/')
     def list_links_check(links_list):
         return [link for link in links_list if link.startswith('https://www.linkedin.com/in/')]

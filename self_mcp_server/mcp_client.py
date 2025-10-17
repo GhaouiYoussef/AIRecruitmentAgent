@@ -29,7 +29,7 @@ from ollama_recruiter.agent_runtime import OracleRuntime  # type: ignore
 # ---------------------------------------------------------------------------
 # Shared config / server definition (points at new unified server if present)
 # ---------------------------------------------------------------------------
-server_script = os.path.join(_REPO_ROOT, "self_mcp_server", "mcp_server_all.py")
+server_script = os.path.join(_REPO_ROOT, "self_mcp_server", "mcp_server_separate.py")
 if not os.path.exists(server_script):  # fallback
     server_script = os.path.join(_REPO_ROOT, "self_mcp_server", "mcp_server.py")
 
