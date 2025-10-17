@@ -13,6 +13,30 @@ End-to-end modular system for: (1) LinkedIn talent discovery & profile extractio
 https://github.com/user-attachments/assets/80a33011-ab23-4121-b947-59cade08964b
 
 
+## Demo: MCP integration (server + client)
+Before running this demo, make sure the LinkedIn and Scorer services are up (see 5.1). The MCP server delegates to those HTTP endpoints. For more details about MCP usage and setup, see section 5.2.
+
+### MCP server UI (MVP)
+Start the MCP server:
+```powershell
+mcp dev .\self_mcp_server\mcp_server_separate.py
+```
+
+
+<img width="1915" height="987" alt="MCP server UI - tools list" src="https://github.com/user-attachments/assets/2fbcb42e-03bb-42cd-9ed7-8a4737b0f4b0" />
+
+<img width="1919" height="984" alt="MCP server UI - tool run example" src="https://github.com/user-attachments/assets/ef3677b8-6c6b-4428-acfc-8c2b96fac29d" />
+
+### MCP client using tools from the MCP server
+Run the client:
+```powershell
+python .\self_mcp_server\mcp_client.py
+```
+
+
+<img width="836" height="792" alt="MCP client - invoking server tools" src="https://github.com/user-attachments/assets/613fe90f-fd1c-4e8d-8d8f-a84c8103dfa9" />
+
+
 ## 1. Project Overview
 
 ### High‑Level Architecture
